@@ -27,24 +27,30 @@ function mergeTimeStamps(timestamps, interval = 30000) {
   while (timestampsQueue.size() > 0) {
     let currentTimestamp = timestampsQueue.dequeue();
     let nextTimestamp = timestampsQueue.peek();
+    let timestampsInInterval = [currentTimestamp];
     if (nextTimestamp) {
       let currentTimestampDate = new Date(currentTimestamp.time);
       let nextTimestampDate = new Date(nextTimestamp.time);
-      if (nextTimestampDate - currentTimestampDate <= interval) {
-        let mergedTimestamp = {
-          ...currentTimestamp,
-          time:
-            new Date(
-              (currentTimestampDate.getTime() + nextTimestampDate.getTime()) / 2
-            )
-              .toISOString()
-              .split(".")[0] + "Z",
-        };
+      while (nextTimestampDate - currentTimestampDate <= interval) {
+        timestampsInInterval.push(nextTimestamp);
         timestampsQueue.dequeue();
-        result.push(mergedTimestamp);
-      } else {
-        result.push(currentTimestamp);
+        nextTimestamp = timestampsQueue.peek();
+        if (!nextTimestamp) {
+          break;
+        }
+        nextTimestampDate = new Date(nextTimestamp.time);
       }
+
+      let totalTime = timestampsInInterval.reduce((acc, timestamp) => {
+        return acc + new Date(timestamp.time).getTime();
+      }, 0);
+
+      let averageTimestamp = new Date(totalTime / timestampsInInterval.length);
+
+      result.push({
+        ...currentTimestamp,
+        time: averageTimestamp.toISOString().split(".")[0] + "Z",
+      });
     } else {
       result.push(currentTimestamp);
     }

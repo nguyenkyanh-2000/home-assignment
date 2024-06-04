@@ -84,9 +84,8 @@ describe("mergeTimeStamps", () => {
       { time: "2023-06-01T10:01:00Z" },
     ];
     const expected = [
-      { time: "2023-06-01T10:00:10Z" }, // Merged from 00:00:00 to 00:00:25
-      { time: "2023-06-01T10:00:40Z" }, // Merged from 00:00:30 to 00:00:50
-      { time: "2023-06-01T10:01:00Z" }, // Last timestamp
+      { time: "2023-06-01T10:00:15Z" },
+      { time: "2023-06-01T10:00:46Z" },
     ];
     expect(mergeTimeStamps(timestamps)).toEqual(expected);
   });
