@@ -29,7 +29,7 @@ describe("mergeTimeStamps", () => {
     expect(mergeTimeStamps(timestamps)).toEqual(expected);
   });
 
-  test("merges timestamps within custom interval", () => {
+  test("merges timestamps within custom interval -- 60 seconds", () => {
     const timestamps = [
       { time: "2023-06-01T10:00:00Z" },
       { time: "2023-06-01T10:00:20Z" },
@@ -41,6 +41,21 @@ describe("mergeTimeStamps", () => {
       { time: "2023-06-01T10:01:35Z" },
     ];
     expect(mergeTimeStamps(timestamps, 60000)).toEqual(expected);
+  });
+
+  test("merges timestamps within custom interval -- 59 seconds", () => {
+    const timestamps = [
+      { time: "2023-06-01T10:00:00Z" },
+      { time: "2023-06-01T10:00:59Z" },
+      { time: "2023-06-01T10:01:00Z" },
+      { time: "2023-06-01T10:02:54Z" },
+    ];
+    const expected = [
+      { time: "2023-06-01T10:00:29Z" },
+      { time: "2023-06-01T10:01:00Z" },
+      { time: "2023-06-01T10:02:54Z" },
+    ];
+    expect(mergeTimeStamps(timestamps, 59000)).toEqual(expected);
   });
 
   test("handles empty array", () => {
@@ -86,6 +101,33 @@ describe("mergeTimeStamps", () => {
     const expected = [
       { time: "2023-06-01T10:00:15Z" },
       { time: "2023-06-01T10:00:46Z" },
+    ];
+    expect(mergeTimeStamps(timestamps)).toEqual(expected);
+  });
+
+  test("merges timestamps with big difference between timestamps", () => {
+    const timestamps = [
+      { time: "2025-06-01T10:04:20Z" },
+      { time: "2023-09-01T10:03:20Z" },
+    ];
+    const expected = [
+      { time: "2023-09-01T10:03:20Z" },
+      { time: "2025-06-01T10:04:20Z" },
+    ];
+    expect(mergeTimeStamps(timestamps)).toEqual(expected);
+  });
+
+  test("multiple random timestamps with random orders", () => {
+    const timestamps = [
+      { time: "2023-06-01T10:01:20Z" },
+      { time: "2023-06-01T10:00:10Z" },
+      { time: "2023-06-01T10:00:40Z" },
+      { time: "2023-06-01T10:00:00Z" },
+    ];
+    const expected = [
+      { time: "2023-06-01T10:00:05Z" },
+      { time: "2023-06-01T10:00:40Z" },
+      { time: "2023-06-01T10:01:20Z" },
     ];
     expect(mergeTimeStamps(timestamps)).toEqual(expected);
   });
